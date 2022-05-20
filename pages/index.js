@@ -1,16 +1,62 @@
-import Head from 'next/head'
+import Head from "next/head";
+import Link from "next/link";
+import react, { useState, useEffect } from "react";
+import { getSortedPostsData } from "../lib/posts";
+import Seo from "./Seo";
 
-export default function Home() {
+/* export async function getStaticProps() {
+  const allPostsData = getSortedPostsData();
+  return {
+    props: {
+      allPostsData,
+    },
+  };
+} */
+
+export async function getServerSideProps() {
+  const { results } = await (
+    await fetch("http://localhost:3000/api/movies")
+  ).json();
+  return {
+    props: {
+      results,
+    },
+  };
+} //html이 렌더링 하기 전에 실행
+export default function Home({ results }) {
+  /* const [count, setCount] = useState(0);
+  const [movies, setMovies] = useState([]);
+
+  useEffect(() => {
+    (async () => {
+      const { results } = await (await fetch("/api/movies")).json();
+      console.log(results);
+      setMovies(results);
+    })();
+  }, []); */
   return (
     <div className="container">
       <Head>
-        <title>Create Next App</title>
-        <link rel="icon" href="/favicon.ico" />
+        {/* <title>Create Next App</title>
+        <link rel="icon" href="/favicon.ico" /> */}
+        <title>Home | Next Movies</title>
       </Head>
 
       <main>
-        <h1 className="title">
-          Welcome to <a href="https://nextjs.org">Next.js!</a>
+        <Seo title="Home" />
+        {results?.map((movie) => (
+          <div key={movie.id}>
+            <img src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`} />
+            <h4>{movie.original_title}</h4>
+          </div>
+        ))}
+      </main>
+
+      {/* <h1 className="title">
+          Read{" "}
+          <Link href="/posts/first-post">
+            <a>this page!</a>
+          </Link>
         </h1>
 
         <p className="description">
@@ -46,6 +92,18 @@ export default function Home() {
             </p>
           </a>
         </div>
+
+        <ul>
+          {allPostsData.map(({ id, date, title }) => (
+            <li>
+              {title}
+              <br />
+              {id}
+              <br />
+              {date}
+            </li>
+          ))}
+        </ul>
       </main>
 
       <footer>
@@ -54,13 +112,32 @@ export default function Home() {
           target="_blank"
           rel="noopener noreferrer"
         >
-          Powered by{' '}
-          <img src="/vercel.svg" alt="Vercel" className="logo" />
+          Powered by{" "}
+          <img src="/vercel.svg" alt="Vercel Logo" className="logo" />
         </a>
-      </footer>
+      </footer> */}
 
       <style jsx>{`
         .container {
+          display: grid;
+          grid-template-columns: 1fr 1fr;
+          padding: 20px;
+          gap: 20px;
+        }
+        .movie img {
+          max-width: 100%;
+          border-radius: 12px;
+          transition: transform 0.2s ease-in-out;
+          box-shadow: rgba(0, 0, 0, 0.1) 0px 4px 12px;
+        }
+        .movie:hover img {
+          transform: scale(1.05) translateY(-10px);
+        }
+        .movie h4 {
+          font-size: 18px;
+          text-align: center;
+        }
+        /* .container {
           min-height: 100vh;
           padding: 0 0.5rem;
           display: flex;
@@ -187,7 +264,7 @@ export default function Home() {
             width: 100%;
             flex-direction: column;
           }
-        }
+        } */
       `}</style>
 
       <style jsx global>{`
@@ -205,5 +282,5 @@ export default function Home() {
         }
       `}</style>
     </div>
-  )
+  );
 }
